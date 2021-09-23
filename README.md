@@ -6,7 +6,7 @@ The application comes with a few npm libraries pre-installed, which you can see 
 - Material-ui
 - Redux
 - React Router Dom
-- [Plotly ](https://plot.ly/javascript/react/)
+- [Plotly](https://plot.ly/javascript/react/)
 
 Note: Your code should not rely on any libraries besides the ones already installed.
 
