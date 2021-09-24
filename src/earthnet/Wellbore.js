@@ -1,19 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFormations, fetchLogs, fetchWells } from '../store/reducers/lists';
+import { makeStyles, Grid } from '@material-ui/core';
 import Dashboard from '../layouts/Dashboard/Dashboard';
-import { Typography, makeStyles, Grid, List, ListItem, ListItemText } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import EsaLogo from '../EsaLogo';
-import EsaPaper from '../layouts/components/EsaPaper/EsaPaper';
-import EsaSelect from '../layouts/components/EsaSelect/EsaSelect';
-import {
-  Portlet,
-  PortletHeader,
-  PortletLabel,
-  PortletContent,
-  EsaButton,
-  PortletToolbar
-} from '../layouts/components';
 import EsaList from './EsaList';
+import { EsaButton } from '../layouts/components';
 
 const styles = theme => ({
   root: {
@@ -57,6 +49,15 @@ const useStyles = makeStyles(styles);
 
 export default function Wellbore() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchWells());
+    dispatch(fetchLogs());
+    dispatch(fetchFormations());
+  }, []);
+
+  const { wells = [], logs = [], formations = [] } = useSelector(state => state.lists);
 
   return (
     <Dashboard>
@@ -64,14 +65,14 @@ export default function Wellbore() {
         <Grid item container xs={12} md={7} spacing={2}>
           <Grid item xs={12} container spacing={2}>
             <Grid item xs={4}>
-              <EsaList />
+              <EsaList title="Wells" options={wells.map(({ name }) => name)} />
             </Grid>
             <Grid item xs={4}>
-              <EsaList />
+              <EsaList title="Logs" options={logs.map(({ log }) => log)} />
             </Grid>
             <Grid item container xs={4} className={classes.content}>
               <Grid item xs={12} style={{ height: '95%' }}>
-                <EsaList />
+                <EsaList title="Formations" options={formations.map(({ name }) => name)} />
               </Grid>
               <Grid item xs={12}>
                 <EsaButton fullWidth>Click me</EsaButton>
