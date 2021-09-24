@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, List, ListItem, ListItemText } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -42,21 +42,19 @@ const styles = theme => ({
   }
 });
 
-function EsaList({ title, options = [], classes = {} }) {
-  const [selectedOptions, setSelect] = useState([]);
-
+function EsaList({ title, options, selected, select, classes = {} }) {
   const handleSelect = value => {
-    const currentIndex = selectedOptions.indexOf(value);
-    const newSelectedOptions = [...selectedOptions];
+    const currentIndex = selected.indexOf(value);
+    const newSelectedOptions = [...selected];
     if (currentIndex === -1) {
       newSelectedOptions.push(value);
     } else {
       newSelectedOptions.splice(currentIndex, 1);
     }
-    setSelect(newSelectedOptions);
+    select(newSelectedOptions);
   };
 
-  const isSelected = value => selectedOptions.includes(value);
+  const isSelected = value => selected.includes(value);
 
   return (
     <Portlet style={{ height: '100%' }}>
@@ -85,7 +83,9 @@ function EsaList({ title, options = [], classes = {} }) {
 }
 
 EsaList.propTypes = {
-  options: PropTypes.arrayOf(PropTypes.node),
+  options: PropTypes.arrayOf(PropTypes.node).isRequired,
+  selected: PropTypes.arrayOf(PropTypes.node).isRequired,
+  select: PropTypes.func.isRequired,
   classes: PropTypes.object.isRequired
 };
 

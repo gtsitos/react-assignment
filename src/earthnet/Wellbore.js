@@ -1,6 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFormations, fetchLogs, fetchWells } from '../store/reducers/lists';
+import {
+  fetchFormations,
+  fetchLogs,
+  fetchWells,
+  selectFormations,
+  selectLogs,
+  selectWells
+} from '../store/reducers/lists';
 import { makeStyles, Grid } from '@material-ui/core';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
@@ -57,7 +64,14 @@ export default function Wellbore() {
     dispatch(fetchFormations());
   }, []);
 
-  const { wells = [], logs = [], formations = [] } = useSelector(state => state.lists);
+  const {
+    wells = [],
+    logs = [],
+    formations = [],
+    selectedWells = [],
+    selectedLogs = [],
+    selectedFormations = []
+  } = useSelector(state => state.lists);
 
   return (
     <Dashboard>
@@ -65,14 +79,29 @@ export default function Wellbore() {
         <Grid item container xs={12} md={7} spacing={2}>
           <Grid item xs={12} container spacing={2}>
             <Grid item xs={4}>
-              <EsaList title="Wells" options={wells.map(({ name }) => name)} />
+              <EsaList
+                title="Wells"
+                options={wells.map(({ name }) => name)}
+                selected={selectedWells}
+                select={i => dispatch(selectWells(i))}
+              />
             </Grid>
             <Grid item xs={4}>
-              <EsaList title="Logs" options={logs.map(({ log }) => log)} />
+              <EsaList
+                title="Logs"
+                options={logs.map(({ log }) => log)}
+                selected={selectedLogs}
+                select={i => dispatch(selectLogs(i))}
+              />
             </Grid>
             <Grid item container xs={4} className={classes.content}>
               <Grid item xs={12} style={{ height: '95%' }}>
-                <EsaList title="Formations" options={formations.map(({ name }) => name)} />
+                <EsaList
+                  title="Formations"
+                  options={formations.map(({ name }) => name)}
+                  selected={selectedFormations}
+                  select={i => dispatch(selectFormations(i))}
+                />
               </Grid>
               <Grid item xs={12}>
                 <EsaButton fullWidth>Click me</EsaButton>
