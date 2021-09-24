@@ -8,7 +8,12 @@ import {
   selectLogs,
   selectWells
 } from '../store/reducers/lists';
-import { fetchAllPlots } from '../store/reducers/plots';
+import {
+  fetchAllPlots,
+  fetchSelectedPlots,
+  selectOrientation,
+  selectBarModes
+} from '../store/reducers/plots';
 import { makeStyles, Grid } from '@material-ui/core';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
@@ -113,7 +118,7 @@ export default function Wellbore() {
               <Grid item xs={12}>
                 <EsaButton
                   disabled={isButtonDisabled}
-                  onClick={() => dispatch(fetchAllPlots())}
+                  onClick={() => dispatch(fetchSelectedPlots())}
                   fullWidth
                 >
                   Show Plot

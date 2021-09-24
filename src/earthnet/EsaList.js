@@ -43,6 +43,7 @@ const styles = theme => ({
 });
 
 function EsaList({ title, options, selected, select, classes = {} }) {
+
   const handleSelect = value => {
     const currentIndex = selected.indexOf(value);
     const newSelectedOptions = [...selected];
