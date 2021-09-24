@@ -8,11 +8,13 @@ import {
   selectLogs,
   selectWells
 } from '../store/reducers/lists';
+import { fetchAllPlots } from '../store/reducers/plots';
 import { makeStyles, Grid } from '@material-ui/core';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
 import EsaList from './EsaList';
 import { EsaButton } from '../layouts/components';
+import EsaPlot from './EsaPlot';
 
 const styles = theme => ({
   root: {
@@ -73,6 +75,11 @@ export default function Wellbore() {
     selectedFormations = []
   } = useSelector(state => state.lists);
 
+  const { data = [] } = useSelector(state => state.plots);
+
+  const isButtonDisabled =
+    selectedWells.length === 0 || selectedLogs.length === 0 || selectedFormations.length === 0;
+
   return (
     <Dashboard>
       <Grid container spacing={1} className={classes.fullHeight}>
@@ -104,15 +111,33 @@ export default function Wellbore() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <EsaButton fullWidth>Click me</EsaButton>
+                <EsaButton
+                  disabled={isButtonDisabled}
+                  onClick={() => dispatch(fetchAllPlots())}
+                  fullWidth
+                >
+                  Show Plot
+                </EsaButton>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} md={5}>
-          <div className={classes.logoContainer}>
-            <EsaLogo />
-          </div>
+          {data.length === 0 ? (
+            <div className={classes.logoContainer}>
+              <EsaLogo />
+            </div>
+          ) : (
+            <EsaPlot
+              title="Wells Plot"
+              data={data.map(({ x, y, wellId }) => ({
+                x,
+                y,
+                type: 'scatter',
+                name: `wellid-${wellId}`
+              }))}
+            />
+          )}
         </Grid>
       </Grid>
     </Dashboard>
