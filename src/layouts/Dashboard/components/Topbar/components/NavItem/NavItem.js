@@ -1,22 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, ListItem, ListItemText } from '@material-ui/core';
-import classnames from 'classnames';
+import { NavLink } from 'react-router-dom';
+
 import styles from './styles';
 const useStyles = makeStyles(styles);
 
-const NavItem = ({ active, to, title }) => {
+const NavItem = ({ to, title }) => {
   const classes = useStyles();
+
+  const CustomLink = props => (
+    <NavLink to={to} activeClassName={classes.activeListItem} {...props} />
+  );
+  
   return (
-    <ListItem
-      button
-      className={classnames({
-        [classes.navItem]: true,
-        [classes.activeListItem]: active
-      })}
-      component="a"
-      href={to}
-    >
+    <ListItem button component={CustomLink} className={classes.navItem}>
       <ListItemText classes={{ primary: classes.listItemText }} primary={title} />
     </ListItem>
   );
