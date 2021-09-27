@@ -1,14 +1,14 @@
 import { routerMiddleware } from 'connected-react-router';
-import { createStore, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit'
 import createRootReducer from './reducers';
 import history from '../history';
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+// DevTools Extension will be enabled by default
 
-const store = createStore(
-  createRootReducer(history),
-  composeEnhancers(applyMiddleware(routerMiddleware(history), thunk))
-);
+const store = configureStore({
+  reducer: createRootReducer(history),
+  middleware: getDefaultMiddleware => // redux-thunk and redux-logger were added as middleware
+    getDefaultMiddleware().concat(routerMiddleware(history))
+});
 
 export default store;
