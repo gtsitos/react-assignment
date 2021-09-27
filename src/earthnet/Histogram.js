@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchFormations,
@@ -65,12 +65,6 @@ export default function Histogram() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchWells());
-    dispatch(fetchLogs());
-    dispatch(fetchFormations());
-  }, []);
-
   const {
     wells = [],
     logs = [],
@@ -88,7 +82,7 @@ export default function Histogram() {
   return (
     <Dashboard>
       <Grid container spacing={2} className={classes.fullHeight}>
-        <Grid item container xs={12} md={7} spacing={1}>
+        <Grid item container xs={12} md={5} spacing={1}>
           <Grid item xs={12}>
             <EsaPaper className={classes.paper}>
               <Grid container spacing={3}>
@@ -155,7 +149,7 @@ export default function Histogram() {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={7}>
           {data.length === 0 ? (
             <div className={classes.logoContainer}>
               <EsaLogo />
@@ -163,7 +157,7 @@ export default function Histogram() {
           ) : (
             <Plot
               useResizeHandler
-              layout={{title:"Wells Plot", autosize: true, barmode }}
+              layout={{ title: 'Wells Plot', autosize: true, barmode }}
               style={{ width: '100%', height: '100%' }}
               data={data.map(({ x, y, wellId }) => ({
                 x,

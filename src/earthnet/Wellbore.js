@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchFormations,
@@ -65,12 +65,6 @@ export default function Wellbore() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchWells());
-    dispatch(fetchLogs());
-    dispatch(fetchFormations());
-  }, []);
-
   const {
     wells = [],
     logs = [],
@@ -88,7 +82,7 @@ export default function Wellbore() {
   return (
     <Dashboard>
       <Grid container spacing={1} className={classes.fullHeight}>
-        <Grid item container xs={12} md={7} spacing={2}>
+        <Grid item container xs={12} md={5} spacing={2}>
           <Grid item xs={12} container spacing={2}>
             <Grid item xs={4}>
               <EsaList
@@ -127,7 +121,7 @@ export default function Wellbore() {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={7}>
           {data.length === 0 ? (
             <div className={classes.logoContainer}>
               <EsaLogo />
