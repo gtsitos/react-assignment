@@ -19,7 +19,7 @@ import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
 import EsaList from './EsaList';
 import { EsaButton } from '../layouts/components';
-import EsaPlot from './EsaPlot';
+import Plot from 'react-plotly.js';
 
 const styles = theme => ({
   root: {
@@ -133,8 +133,10 @@ export default function Wellbore() {
               <EsaLogo />
             </div>
           ) : (
-            <EsaPlot
-              title="Wells Plot"
+            <Plot
+              useResizeHandler
+              layout={{ title: 'Wells Plot', autosize: true }}
+              style={{ width: '100%', height: '100%' }}
               data={data.map(({ x, y, wellId }) => ({
                 x,
                 y,

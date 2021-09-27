@@ -23,12 +23,12 @@ export const plotsSlice = createSlice({
   name: 'plots',
   initialState: {
     data: [],
-    barMode: 'stack',
-    orientation: 'vertical'
+    barmode: 'stack',
+    orientation: 'v'
   },
   reducers: {
-    selectBarMode: (state, action) => {
-      state.barMode = action.payload;
+    selectBarmode: (state, action) => {
+      state.barmode = action.payload;
     },
     selectOrientation: (state, action) => {
       state.orientation = action.payload;
@@ -45,6 +45,6 @@ export const plotsSlice = createSlice({
   }
 });
 
-export const { selectWellPlots, selectBarMode, selectOrientation } = plotsSlice.actions;
+export const { selectWellPlots, selectBarmode, selectOrientation } = plotsSlice.actions;
 
 export default plotsSlice.reducer;

@@ -12,14 +12,14 @@ import {
   fetchAllPlots,
   fetchSelectedPlots,
   selectOrientation,
-  selectBarMode
+  selectBarmode
 } from '../store/reducers/plots';
 import { makeStyles, Typography, Grid } from '@material-ui/core';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
 import EsaList from './EsaList';
 import { EsaButton, EsaSelect, EsaPaper } from '../layouts/components';
-import EsaPlot from './EsaPlot';
+import Plot from 'react-plotly.js';
 
 const styles = theme => ({
   root: {
@@ -80,14 +80,14 @@ export default function Histogram() {
     selectedFormations = []
   } = useSelector(state => state.lists);
 
-  const { data = [], barMode, orientation } = useSelector(state => state.plots);
+  const { data = [], barmode, orientation } = useSelector(state => state.plots);
 
   const isButtonDisabled =
     selectedWells.length === 0 || selectedLogs.length === 0 || selectedFormations.length === 0;
 
   return (
     <Dashboard>
-      <Grid container spacing={1} className={classes.fullHeight}>
+      <Grid container spacing={2} className={classes.fullHeight}>
         <Grid item container xs={12} md={7} spacing={1}>
           <Grid item xs={12}>
             <EsaPaper className={classes.paper}>
@@ -95,12 +95,12 @@ export default function Histogram() {
                 <Grid item xs={6}>
                   <EsaSelect
                     label="Bar Mode"
-                    value={barMode}
+                    value={barmode}
                     options={[
                       { key: 'stack', value: 'stack', text: 'stack' },
                       { key: 'group', value: 'group', text: 'group' }
                     ]}
-                    onChange={value => dispatch(selectBarMode(value))}
+                    onChange={value => dispatch(selectBarmode(value))}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -108,8 +108,8 @@ export default function Histogram() {
                     label="Orientation"
                     value={orientation}
                     options={[
-                      { key: 'vertical', value: 'vertical', text: 'vertical' },
-                      { key: 'horizontal', value: 'horizontal', text: 'horizontal' }
+                      { key: 'vertical', value: 'v', text: 'vertical' },
+                      { key: 'horizontal', value: 'h', text: 'horizontal' }
                     ]}
                     onChange={value => dispatch(selectOrientation(value))}
                   />
@@ -161,11 +161,14 @@ export default function Histogram() {
               <EsaLogo />
             </div>
           ) : (
-            <EsaPlot
-              title="Wells Plot"
+            <Plot
+              useResizeHandler
+              layout={{title:"Wells Plot", autosize: true, barmode }}
+              style={{ width: '100%', height: '100%' }}
               data={data.map(({ x, y, wellId }) => ({
                 x,
                 y,
+                orientation,
                 type: 'histogram',
                 name: `wellid-${wellId}`
               }))}
