@@ -9,10 +9,10 @@ const useStyles = makeStyles(styles);
 const NavItem = ({ to, title }) => {
   const classes = useStyles();
 
-  const CustomLink = props => (
-    <NavLink to={to} activeClassName={classes.activeListItem} {...props} />
-  );
-  
+  const CustomLink = React.forwardRef((props, ref) => (
+    <NavLink to={to} activeClassName={classes.activeListItem} ref={ref} {...props} />
+  ));
+
   return (
     <ListItem button component={CustomLink} className={classes.navItem}>
       <ListItemText classes={{ primary: classes.listItemText }} primary={title} />
