@@ -1,19 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  fetchFormations,
-  fetchLogs,
-  fetchWells,
-  selectFormations,
-  selectLogs,
-  selectWells
-} from '../store/reducers/lists';
-import {
-  fetchAllPlots,
-  fetchSelectedPlots,
-  selectOrientation,
-  selectBarModes
-} from '../store/reducers/plots';
+import { selectFormations, selectLogs, selectWells } from '../store/reducers/lists';
+import { fetchSelectedPlots } from '../store/reducers/plots';
 import { makeStyles, Grid } from '@material-ui/core';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
@@ -81,8 +69,8 @@ export default function Wellbore() {
 
   return (
     <Dashboard>
-      <Grid container spacing={1} className={classes.fullHeight}>
-        <Grid item container xs={12} md={5} spacing={2}>
+      <Grid container spacing={2} className={classes.fullHeight}>
+        <Grid item container xs={12} md={5} spacing={1}>
           <Grid item xs={12} container spacing={2}>
             <Grid item xs={4}>
               <EsaList
@@ -100,8 +88,8 @@ export default function Wellbore() {
                 select={i => dispatch(selectLogs(i))}
               />
             </Grid>
-            <Grid item container xs={4} className={classes.content}>
-              <Grid item xs={12} style={{ height: '95%' }}>
+            <Grid item container xs={4} spacing={1} className={classes.content}>
+              <Grid item xs={12} style={{ height: '93%' }}>
                 <EsaList
                   title="Formations"
                   options={formations.map(({ name }) => name)}

@@ -1,20 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  fetchFormations,
-  fetchLogs,
-  fetchWells,
-  selectFormations,
-  selectLogs,
-  selectWells
-} from '../store/reducers/lists';
-import {
-  fetchAllPlots,
-  fetchSelectedPlots,
-  selectOrientation,
-  selectBarmode
-} from '../store/reducers/plots';
-import { makeStyles, Typography, Grid } from '@material-ui/core';
+import { selectFormations, selectLogs, selectWells } from '../store/reducers/lists';
+import { fetchSelectedPlots, selectOrientation, selectBarmode } from '../store/reducers/plots';
+import { makeStyles, Grid } from '@material-ui/core';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
 import EsaList from './EsaList';
@@ -81,8 +69,8 @@ export default function Histogram() {
 
   return (
     <Dashboard>
-      <Grid container spacing={2} className={classes.fullHeight}>
-        <Grid item container xs={12} md={5} spacing={1}>
+      <Grid container spacing={2} className={classes.fullHeight} alignItems="stretch">
+        <Grid item container xs={12} md={5} spacing={1} >
           <Grid item xs={12}>
             <EsaPaper className={classes.paper}>
               <Grid container spacing={3}>
@@ -111,7 +99,7 @@ export default function Histogram() {
               </Grid>
             </EsaPaper>
           </Grid>
-          <Grid item xs={12} container spacing={2}>
+          <Grid item xs={12} container spacing={2} style={{ height: '85%' }}>
             <Grid item xs={4}>
               <EsaList
                 title="Wells"
@@ -128,8 +116,8 @@ export default function Histogram() {
                 select={i => dispatch(selectLogs(i))}
               />
             </Grid>
-            <Grid item container xs={4} className={classes.content}>
-              <Grid item xs={12} style={{ height: '95%' }}>
+            <Grid item container xs={4} spacing={1} className={classes.content}>
+              <Grid item xs={12} style={{ height: '93%' }}>
                 <EsaList
                   title="Formations"
                   options={formations.map(({ name }) => name)}
