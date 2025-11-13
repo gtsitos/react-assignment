@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import { Typography, Grid, List, ListItem, ListItemText } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EsaLogo from '../EsaLogo';
 import EsaPaper from '../layouts/components/EsaPaper/EsaPaper';
@@ -15,60 +15,54 @@ import {
   PortletToolbar
 } from '../layouts/components';
 
-const styles = theme => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  fullHeight: { height: '100%' },
-  paper: {
-    padding: theme.spacing(3)
-  },
-  button: { marginTop: theme.spacing(3) },
-  logoContainer: {
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '& svg': {
-      width: '30%'
-    }
-  },
-  header: {
-    padding: theme.spacing(0, 1, 0, 2),
-    background: theme.palette.default.dark,
-    color: theme.palette.default.contrastText
-  },
-  headerLabel: {
-    '& .MuiTypography-root': {
-      fontSize: '12px',
-      fontWeight: 800
-    }
-  },
-  portletContent: {
-    height: 0,
-    minHeight: 400,
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  listItem: {
-    cursor: 'pointer',
-    justifyContent: ' space-between',
-    '&.Mui-selected.haveData,&.Mui-selected.haveData:hover': {
-      backgroundColor: 'rgba(41, 150, 243, .3)'
-    },
-    '&:hover, &.Mui-selected,&.Mui-selected:hover': {
-      backgroundColor: theme.palette.default.light
-    },
-    '&::selection': { backgroundColor: 'transparent' }
-  }
+const FullHeightGrid = styled(Grid)({
+  height: '100%'
 });
-const useStyles = makeStyles(styles);
+
+const StyledEsaPaper = styled(EsaPaper)(({ theme }) => ({
+  padding: theme.spacing(3)
+}));
+
+const StyledEsaButton = styled(EsaButton)(({ theme }) => ({
+  marginTop: theme.spacing(3)
+}));
+
+const LogoContainer = styled('div')(({ theme }) => ({
+  height: '100%',
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  '& svg': {
+    width: '30%'
+  },
+  gap: theme.spacing(1)
+}));
+
+const Header = styled(PortletHeader)(({ theme }) => ({
+  padding: theme.spacing(0, 1, 0, 2),
+  background: theme.palette.default.dark,
+  color: theme.palette.default.contrastText
+}));
+
+const Content = styled(PortletContent)({
+  height: 0,
+  minHeight: 400,
+  display: 'flex',
+  flexDirection: 'column'
+});
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  cursor: 'pointer',
+  justifyContent: 'space-between',
+  '&:hover, &.Mui-selected,&.Mui-selected:hover': {
+    backgroundColor: theme.palette.default.light
+  },
+  '&::selection': { backgroundColor: 'transparent' }
+}));
 
 export default function ExamplePage() {
-  const classes = useStyles();
   const [singleValue, onChangeSingle] = useState(1);
   const [multiValue, onChangeMulti] = useState([]);
   const [selectedOptions, setSelect] = useState([]);
@@ -88,12 +82,12 @@ export default function ExamplePage() {
 
   return (
     <Dashboard>
-      <Grid container spacing={1} className={classes.fullHeight}>
+      <FullHeightGrid container spacing={1}>
         <Grid item xs={12} md={5} container spacing={2}>
           <Grid item xs={12} container>
             <Grid item xs={12}>
               <Typography variant="body1">* Usage of Paper</Typography>
-              <EsaPaper className={classes.paper}>
+              <StyledEsaPaper>
                 <Grid container spacing={3}>
                   <Grid item xs={6}>
                     <EsaSelect
@@ -119,7 +113,7 @@ export default function ExamplePage() {
                     />
                   </Grid>
                 </Grid>
-              </EsaPaper>
+              </StyledEsaPaper>
             </Grid>
           </Grid>
           <Grid item xs={12} container spacing={2}>
@@ -133,46 +127,45 @@ export default function ExamplePage() {
                 </PortletHeader>
                 <PortletContent>
                   Portlet Content:
-                  <EsaButton fullWidth className={classes.button}>
+                  <StyledEsaButton fullWidth>
                     Click me
-                  </EsaButton>
+                  </StyledEsaButton>
                 </PortletContent>
               </Portlet>
             </Grid>
             <Grid item xs={7}>
               <Portlet>
-                <PortletHeader className={classes.header}>
+                <Header>
                   <PortletLabel title="Title" />
                   <PortletToolbar>
                     <MoreVertIcon />
                   </PortletToolbar>
-                </PortletHeader>
-                <PortletContent className={classes.portletContent} noPadding>
+                </Header>
+                <Content noPadding>
                   <List>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(
                       option => (
-                        <ListItem
+                        <StyledListItem
                           key={option}
-                          className={classes.listItem}
                           selected={isSelected(option)}
                           onClick={() => handleSelect(option)}
                         >
                           <ListItemText primary={`item-${option}`} />
-                        </ListItem>
+                        </StyledListItem>
                       )
                     )}
                   </List>
-                </PortletContent>
+                </Content>
               </Portlet>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={12} md={7}>
-          <div className={classes.logoContainer}>
+          <LogoContainer>
             <EsaLogo />
-          </div>
+          </LogoContainer>
         </Grid>
-      </Grid>
+      </FullHeightGrid>
     </Dashboard>
   );
 }

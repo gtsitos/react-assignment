@@ -1,47 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { withStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 
-// Component styles
-const styles = theme => ({
-  root: {
-    paddingLeft: theme.spacing(3),
-    paddingRight: theme.spacing(3),
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    flexGrow: 1,
-    overflowY: 'auto'
-  },
-  noPadding: {
-    padding: 0
-  }
-});
+const PortletContentRoot = styled('div', {
+  shouldForwardProp: prop => prop !== 'noPadding'
+})(({ theme, noPadding }) => ({
+  paddingLeft: theme.spacing(3),
+  paddingRight: theme.spacing(3),
+  paddingTop: theme.spacing(2),
+  paddingBottom: theme.spacing(2),
+  flexGrow: 1,
+  overflowY: 'auto',
+  ...(noPadding && { padding: 0 })
+}));
 
-const PortletContent = props => {
-  const { classes, className, children, noPadding, maxHeight, contentStyle, ...rest } = props;
-
-  const rootClassName = classNames(
-    {
-      [classes.root]: true,
-      [classes.noPadding]: noPadding
-    },
-    className
-  );
-
-  return (
-    <div className={rootClassName} style={{ maxHeight, ...contentStyle }} {...rest}>
-      {children}
-    </div>
-  );
-};
+const PortletContent = ({
+  className,
+  children,
+  noPadding = false,
+  maxHeight,
+  contentStyle = {},
+  ...rest
+}) => (
+  <PortletContentRoot
+    {...rest}
+    className={className}
+    noPadding={noPadding}
+    style={{ ...(maxHeight ? { maxHeight } : {}), ...contentStyle }}
+  >
+    {children}
+  </PortletContentRoot>
+);
 
 PortletContent.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   maxHeight: PropTypes.number,
-  classes: PropTypes.object.isRequired,
-  noPadding: PropTypes.bool
+  noPadding: PropTypes.bool,
+  contentStyle: PropTypes.object
 };
 
-export default withStyles(styles)(PortletContent);
+export default PortletContent;

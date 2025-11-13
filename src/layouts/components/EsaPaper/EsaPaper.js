@@ -1,53 +1,41 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { withStyles } from '@mui/styles';
 import { Paper } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-// Component styles
-const styles = theme => {
-  return {
-    root: {
-      borderRadius: '4px',
-      maxWidth: '100%',
-      border: 0,
-      boxShadow: '0 10px 40px 0 rgba(16, 36, 94, 0.2)'
-    },
-    squared: {
-      borderRadius: 0
-    },
-    outlined: {
-      border: `1px solid ${theme.palette.border}`
-    }
-  };
-};
+const EsaPaperRoot = styled(Paper, {
+  shouldForwardProp: prop => !['outlined', 'squared'].includes(prop)
+})(({ theme, outlined, squared }) => ({
+  borderRadius: squared ? 0 : '4px',
+  maxWidth: '100%',
+  border: outlined ? `1px solid ${theme.palette.border}` : 0,
+  boxShadow: '0 10px 40px 0 rgba(16, 36, 94, 0.2)'
+}));
 
-const EsaPaper = props => {
-  const { classes, className, outlined, squared, children, paperRef, ...rest } = props;
-
-  const rootClassName = classNames(
-    {
-      [classes.root]: true,
-      [classes.squared]: squared,
-      [classes.outlined]: outlined
-    },
-    className
-  );
-
+const EsaPaper = forwardRef(function EsaPaper(
+  { className, outlined = false, squared = false, children, paperRef, ...rest },
+  ref
+) {
   return (
-    <Paper {...rest} ref={paperRef} className={rootClassName}>
+    <EsaPaperRoot
+      {...rest}
+      className={className}
+      outlined={outlined}
+      squared={squared}
+      ref={paperRef ?? ref}
+    >
       {children}
-    </Paper>
+    </EsaPaperRoot>
   );
-};
+});
 
 EsaPaper.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  classes: PropTypes.object.isRequired,
   elevation: PropTypes.number,
   outlined: PropTypes.bool,
-  squared: PropTypes.bool
+  squared: PropTypes.bool,
+  paperRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })])
 };
 
 EsaPaper.defaultProps = {
@@ -56,4 +44,4 @@ EsaPaper.defaultProps = {
   elevation: 0
 };
 
-export default withStyles(styles)(EsaPaper);
+export default EsaPaper;

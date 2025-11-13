@@ -1,40 +1,42 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { withStyles } from '@mui/styles';
 import { TextField, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-// Component styles
-const styles = {
-  formControl: {
-    display: 'flex',
-    width: '100%'
-  }
-};
+const StyledTextField = styled(TextField)({
+  display: 'flex',
+  width: '100%'
+});
 
-const SingleSelect = props => {
-  const { classes, className, label, value, onChange, options, error, helperText, ...rest } = props;
-  const rootClassName = classnames(classes.formControl, className);
-  return (
-    <TextField
-      {...rest}
-      placeholder="Placeholder"
-      error={error}
-      select
-      label={label}
-      helperText={helperText}
-      className={rootClassName}
-      value={value}
-      onChange={e => onChange(e.target.value)}
-    >
-      {options.map(type => (
-        <MenuItem key={type.key} value={type.value}>
-          {type.text}
-        </MenuItem>
-      ))}
-    </TextField>
-  );
-};
+const SingleSelect = ({
+  className,
+  label,
+  value,
+  onChange,
+  options,
+  error,
+  helperText,
+  placeholder = 'Placeholder',
+  ...rest
+}) => (
+  <StyledTextField
+    {...rest}
+    placeholder={placeholder}
+    error={error}
+    select
+    label={label}
+    helperText={helperText}
+    className={className}
+    value={value}
+    onChange={e => onChange(e.target.value)}
+  >
+    {options.map(type => (
+      <MenuItem key={type.key} value={type.value}>
+        {type.text}
+      </MenuItem>
+    ))}
+  </StyledTextField>
+);
 
 SingleSelect.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
@@ -44,13 +46,14 @@ SingleSelect.propTypes = {
   helperText: PropTypes.string,
   onChange: PropTypes.func,
   className: PropTypes.string,
-  classes: PropTypes.object.isRequired
+  placeholder: PropTypes.string
 };
 
 SingleSelect.defaultProps = {
   label: '',
   value: '',
-  options: []
+  options: [],
+  onChange: () => {}
 };
 
-export default withStyles(styles)(SingleSelect);
+export default SingleSelect;

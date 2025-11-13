@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
-import { List, ListItem, ListItemText } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Typography
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Portlet,
@@ -11,39 +19,79 @@ import {
   PortletToolbar
 } from '../layouts/components';
 
-// Component styles
-const styles = theme => ({
-  header: {
-    padding: theme.spacing(0, 1, 0, 2),
-    background: theme.palette.default.dark,
-    color: theme.palette.default.contrastText
-  },
-  headerLabel: {
-    '& .MuiTypography-root': {
-      fontSize: '12px',
-      fontWeight: 800
-    }
-  },
-  portletContent: {
-    height: 0,
-    minHeight: 400,
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  listItem: {
-    cursor: 'pointer',
-    justifyContent: ' space-between',
-    '&.Mui-selected.haveData,&.Mui-selected.haveData:hover': {
-      backgroundColor: 'rgba(41, 150, 243, .3)'
-    },
-    '&:hover, &.Mui-selected,&.Mui-selected:hover': {
-      backgroundColor: theme.palette.default.light
-    },
-    '&::selection': { backgroundColor: 'transparent' }
+const StyledPortletHeader = styled(PortletHeader)(({ theme }) => ({
+  padding: theme.spacing(0, 1, 0, 2),
+  background: theme.palette.default.dark,
+  color: theme.palette.default.contrastText
+}));
+
+const StyledPortletLabel = styled(PortletLabel)({
+  '& .MuiTypography-root': {
+    fontSize: '12px',
+    fontWeight: 800
   }
 });
 
-function EsaList({ title, options, selected, select, classes = {} }) {
+const StyledPortletContent = styled(PortletContent)({
+  height: 0,
+  minHeight: 400,
+  display: 'flex',
+  flexDirection: 'column'
+});
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  cursor: 'pointer',
+  justifyContent: 'space-between',
+  '&:hover, &.Mui-selected,&.Mui-selected:hover': {
+    backgroundColor: theme.palette.default.light
+  },
+  '&::selection': { backgroundColor: 'transparent' }
+}));
+
+const StateContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  minHeight: 200,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(2),
+  textAlign: 'center'
+}));
+
+const RetryButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(1)
+}));
+
+function normalizeOptions(options) {
+  return options.map(option => {
+    if (typeof option === 'string' || typeof option === 'number') {
+      return {
+        value: option,
+        label: option,
+        disabled: false
+      };
+    }
+
+    return {
+      value: option.value ?? option.label,
+      label: option.label ?? option.value,
+      disabled: Boolean(option.disabled),
+      secondary: option.secondary
+    };
+  });
+}
+
+function EsaList({
+  title,
+  options,
+  selected,
+  select,
+  loading = false,
+  error = null,
+  onRetry,
+  emptyMessage = 'No options available'
+}) {
+  const normalizedOptions = useMemo(() => normalizeOptions(options), [options]);
 
   const handleSelect = value => {
     const currentIndex = selected.indexOf(value);
@@ -58,37 +106,105 @@ function EsaList({ title, options, selected, select, classes = {} }) {
 
   const isSelected = value => selected.includes(value);
 
+  const handleItemInteraction = (event, option) => {
+    if (option.disabled) {
+      return;
+    }
+    event.preventDefault();
+    handleSelect(option.value);
+  };
+
+  const renderState = content => (
+    <StateContainer>
+      <div>{content}</div>
+    </StateContainer>
+  );
+
+  const renderContent = () => {
+    if (loading) {
+      return renderState(<CircularProgress size={24} aria-label="Loading options" />);
+    }
+
+    if (error) {
+      return renderState(
+        <>
+          <Typography variant="body2" color="error">
+            {error}
+          </Typography>
+          {onRetry && (
+            <RetryButton variant="outlined" size="small" onClick={onRetry}>
+              Retry
+            </RetryButton>
+          )}
+        </>
+      );
+    }
+
+    if (!normalizedOptions.length) {
+      return renderState(
+        <Typography variant="body2" color="textSecondary">
+          {emptyMessage}
+        </Typography>
+      );
+    }
+
+    return (
+      <List>
+        {normalizedOptions.map(option => (
+          <StyledListItem
+            key={option.value}
+            selected={isSelected(option.value)}
+            onClick={event => handleItemInteraction(event, option)}
+            onKeyDown={event => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                handleItemInteraction(event, option);
+              }
+            }}
+            button
+            disabled={option.disabled}
+            tabIndex={0}
+            aria-pressed={isSelected(option.value)}
+            aria-disabled={option.disabled}
+          >
+            <ListItemText primary={option.label} secondary={option.secondary} />
+          </StyledListItem>
+        ))}
+      </List>
+    );
+  };
+
   return (
     <Portlet style={{ height: '100%' }}>
-      <PortletHeader className={classes.header}>
-        <PortletLabel title={title} />
+      <StyledPortletHeader>
+        <StyledPortletLabel title={title} />
         <PortletToolbar>
           <MoreVertIcon />
         </PortletToolbar>
-      </PortletHeader>
-      <PortletContent className={classes.portletContent} noPadding>
-        <List>
-          {options.map(option => (
-            <ListItem
-              key={option}
-              className={classes.listItem}
-              selected={isSelected(option)}
-              onClick={() => handleSelect(option)}
-            >
-              <ListItemText primary={option} />
-            </ListItem>
-          ))}
-        </List>
-      </PortletContent>
+      </StyledPortletHeader>
+      <StyledPortletContent noPadding>{renderContent()}</StyledPortletContent>
     </Portlet>
   );
 }
 
 EsaList.propTypes = {
-  options: PropTypes.arrayOf(PropTypes.node).isRequired,
-  selected: PropTypes.arrayOf(PropTypes.node).isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.shape({
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        disabled: PropTypes.bool,
+        secondary: PropTypes.node
+      })
+    ])
+  ).isRequired,
+  selected: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
   select: PropTypes.func.isRequired,
-  classes: PropTypes.object.isRequired
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  onRetry: PropTypes.func,
+  emptyMessage: PropTypes.string
 };
 
-export default withStyles(styles)(EsaList);
+export default EsaList;

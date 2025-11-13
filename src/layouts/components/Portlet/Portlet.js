@@ -1,30 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { withStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import EsaPaper from '../EsaPaper/EsaPaper';
-// Component styles
-const styles = () => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column'
-  }
+
+const PortletRoot = styled(EsaPaper)({
+  display: 'flex',
+  flexDirection: 'column'
 });
 
-const Portlet = props => {
-  const { classes, className, children, ...rest } = props;
-  const rootClassName = classNames(classes.root, className);
+const Portlet = ({ className, children, ...rest }) => (
+  <PortletRoot {...rest} className={className}>
+    {children}
+  </PortletRoot>
+);
 
-  return (
-    <EsaPaper {...rest} className={rootClassName}>
-      {children}
-    </EsaPaper>
-  );
-};
 Portlet.propTypes = {
   children: PropTypes.node,
-  className: PropTypes.string,
-  classes: PropTypes.object.isRequired
+  className: PropTypes.string
 };
 
-export default withStyles(styles)(Portlet);
+export default Portlet;

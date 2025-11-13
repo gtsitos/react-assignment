@@ -1,57 +1,58 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectFormations, selectLogs, selectWells } from '../store/reducers/lists';
+import {
+  fetchFormations,
+  fetchLogs,
+  fetchWells,
+  selectFormations,
+  selectLogs,
+  selectWells
+} from '../store/reducers/lists';
 import { fetchSelectedPlots } from '../store/reducers/plots';
-import { makeStyles } from '@mui/styles';
-import { Grid } from '@mui/material';
+import { Button, CircularProgress, Grid, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import Dashboard from '../layouts/Dashboard/Dashboard';
 import EsaLogo from '../EsaLogo';
 import EsaList from './EsaList';
 import { EsaButton } from '../layouts/components';
 import Plot from 'react-plotly.js';
 
-const styles = theme => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  fullHeight: { height: '100%' },
-  paper: {
-    padding: theme.spacing(3)
-  },
-  button: { marginTop: theme.spacing(3) },
-  logoContainer: {
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '& svg': {
-      width: '30%'
-    }
-  },
-  header: {
-    padding: theme.spacing(0, 1, 0, 2),
-    background: theme.palette.default.dark,
-    color: theme.palette.default.contrastText
-  },
-  headerLabel: {
-    '& .MuiTypography-root': {
-      fontSize: '12px',
-      fontWeight: 800
-    }
-  },
-  content: {
-    display: 'flex',
-    alignContent: 'space-between'
-  }
+const FullHeightGrid = styled(Grid)({
+  height: '100%'
 });
 
-const useStyles = makeStyles(styles);
+const LogoContainer = styled('div')(({ theme }) => ({
+  height: '100%',
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  '& svg': {
+    width: '30%'
+  },
+  gap: theme.spacing(1)
+}));
+
+const RetryButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(3)
+}));
+
+const ContentGrid = styled(Grid)({
+  display: 'flex',
+  alignContent: 'space-between'
+});
+
+const getAllowedIds = (entities, key) => {
+  if (!entities.length) {
+    return null;
+  }
+
+  const allIds = entities.flatMap(entity => entity[key] ?? []);
+  return new Set(allIds);
+};
 
 export default function Wellbore() {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const {
@@ -60,42 +61,140 @@ export default function Wellbore() {
     formations = [],
     selectedWells = [],
     selectedLogs = [],
-    selectedFormations = []
+    selectedFormations = [],
+    status,
+    error
   } = useSelector(state => state.lists);
 
-  const { data = [] } = useSelector(state => state.plots);
+  const { data = [], status: plotStatus, error: plotError } = useSelector(state => state.plots);
 
   const isButtonDisabled =
-    selectedWells.length === 0 || selectedLogs.length === 0 || selectedFormations.length === 0;
+    selectedWells.length === 0 ||
+    selectedLogs.length === 0 ||
+    selectedFormations.length === 0 ||
+    plotStatus === 'loading';
+
+  const selectedWellEntities = useMemo(
+    () => wells.filter(({ name }) => selectedWells.includes(name)),
+    [wells, selectedWells]
+  );
+
+  const allowedLogIds = useMemo(
+    () => getAllowedIds(selectedWellEntities, 'logs'),
+    [selectedWellEntities]
+  );
+  const allowedFormationIds = useMemo(
+    () => getAllowedIds(selectedWellEntities, 'formations'),
+    [selectedWellEntities]
+  );
+
+  const wellOptions = useMemo(
+    () => wells.map(({ name }) => ({ value: name, label: name })),
+    [wells]
+  );
+
+  const logOptions = useMemo(
+    () =>
+      logs.map(({ log, id }) => ({
+        value: log,
+        label: log,
+        disabled: allowedLogIds ? !allowedLogIds.has(id) : true
+      })),
+    [logs, allowedLogIds]
+  );
+
+  const formationOptions = useMemo(
+    () =>
+      formations.map(({ name, id }) => ({
+        value: name,
+        label: name,
+        disabled: allowedFormationIds ? !allowedFormationIds.has(id) : true
+      })),
+    [formations, allowedFormationIds]
+  );
+
+  const renderPlotContent = () => {
+    if (plotStatus === 'loading') {
+      return (
+        <LogoContainer>
+          <CircularProgress size={32} />
+        </LogoContainer>
+      );
+    }
+
+    if (plotStatus === 'failed') {
+      return (
+        <LogoContainer>
+          <Typography variant="body2" color="error" align="center">
+            {plotError || 'Unable to load plots'}
+          </Typography>
+          <RetryButton variant="outlined" size="small" onClick={() => dispatch(fetchSelectedPlots())}>
+            Retry
+          </RetryButton>
+        </LogoContainer>
+      );
+    }
+
+    if (data.length === 0) {
+      return (
+        <LogoContainer>
+          <EsaLogo />
+        </LogoContainer>
+      );
+    }
+
+    return (
+      <Plot
+        useResizeHandler
+        layout={{ title: 'Wells Plot', autosize: true }}
+        style={{ width: '100%', height: '100%' }}
+        data={data.map(({ x, y, wellId }) => ({
+          x,
+          y,
+          type: 'scatter',
+          name: `wellid-${wellId}`
+        }))}
+      />
+    );
+  };
 
   return (
     <Dashboard>
-      <Grid container spacing={2} className={classes.fullHeight}>
+      <FullHeightGrid container spacing={2}>
         <Grid item container xs={12} md={5} spacing={1}>
           <Grid item xs={12} container spacing={2}>
             <Grid item xs={4}>
               <EsaList
                 title="Wells"
-                options={wells.map(({ name }) => name)}
+                options={wellOptions}
                 selected={selectedWells}
                 select={i => dispatch(selectWells(i))}
+                loading={status?.wells === 'loading'}
+                error={status?.wells === 'failed' ? error?.wells : null}
+                onRetry={() => dispatch(fetchWells())}
               />
             </Grid>
             <Grid item xs={4}>
               <EsaList
                 title="Logs"
-                options={logs.map(({ log }) => log)}
+                options={logOptions}
                 selected={selectedLogs}
                 select={i => dispatch(selectLogs(i))}
+                loading={status?.logs === 'loading'}
+                error={status?.logs === 'failed' ? error?.logs : null}
+                onRetry={() => dispatch(fetchLogs())}
               />
             </Grid>
-            <Grid item container xs={4} spacing={1} className={classes.content}>
+            <ContentGrid item container xs={4} spacing={1}>
               <Grid item xs={12} style={{ height: '93%' }}>
                 <EsaList
                   title="Formations"
-                  options={formations.map(({ name }) => name)}
+                  options={formationOptions}
                   selected={selectedFormations}
                   select={i => dispatch(selectFormations(i))}
+                  loading={status?.formations === 'loading'}
+                  error={status?.formations === 'failed' ? error?.formations : null}
+                  onRetry={() => dispatch(fetchFormations())}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -107,29 +206,13 @@ export default function Wellbore() {
                   Show Plot
                 </EsaButton>
               </Grid>
-            </Grid>
+            </ContentGrid>
           </Grid>
         </Grid>
         <Grid item xs={12} md={7}>
-          {data.length === 0 ? (
-            <div className={classes.logoContainer}>
-              <EsaLogo />
-            </div>
-          ) : (
-            <Plot
-              useResizeHandler
-              layout={{ title: 'Wells Plot', autosize: true }}
-              style={{ width: '100%', height: '100%' }}
-              data={data.map(({ x, y, wellId }) => ({
-                x,
-                y,
-                type: 'scatter',
-                name: `wellid-${wellId}`
-              }))}
-            />
-          )}
+          {renderPlotContent()}
         </Grid>
-      </Grid>
+      </FullHeightGrid>
     </Dashboard>
   );
 }

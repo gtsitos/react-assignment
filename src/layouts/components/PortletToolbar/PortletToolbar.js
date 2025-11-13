@@ -1,32 +1,22 @@
 import React from 'react';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 
-const styles = () => ({
-  root: {
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    display: 'flex'
-  }
+const PortletToolbarRoot = styled('div')({
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+  display: 'flex'
 });
 
-const PortletToolbar = props => {
-  const { classes, className, children, ...rest } = props;
-
-  const rootClassName = classNames(classes.root, className);
-
-  return (
-    <div {...rest} className={rootClassName}>
-      {children}
-    </div>
-  );
-};
+const PortletToolbar = ({ className, children, ...rest }) => (
+  <PortletToolbarRoot {...rest} className={className}>
+    {children}
+  </PortletToolbarRoot>
+);
 
 PortletToolbar.propTypes = {
   children: PropTypes.node,
-  className: PropTypes.string,
-  classes: PropTypes.object.isRequired
+  className: PropTypes.string
 };
 
-export default withStyles(styles)(PortletToolbar);
+export default PortletToolbar;

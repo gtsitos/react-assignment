@@ -1,49 +1,69 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { withStyles } from '@mui/styles';
 import { Button, CircularProgress } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-// Like https://github.com/brunobertolini/styled-by
-const styledBy = (property, mapping) => props => mapping[props[property]];
-
-// Component styles
-const EsaButton = withStyles(theme => ({
-  root: {
-    color: theme.palette.default.contrastText,
-    backgroundColor: styledBy('color', {
-      default: theme.palette.default.dark,
-      primary: theme.palette.primary.main,
-      secondary: theme.palette.secondary.main,
-      info: theme.palette.info.main,
-      danger: theme.palette.danger.main,
-      dark: 'rgb(55,55,55)'
-    }),
-    '&:hover': {
-      backgroundColor: styledBy('color', {
-        default: theme.palette.default.main,
-        primary: theme.palette.primary.dark,
-        secondary: theme.palette.secondary.dark,
-        info: theme.palette.info.dark,
-        danger: theme.palette.danger.dark,
-        dark: 'rgba(55,55,55, .9)'
-      })
+const colorMap = (theme, key) =>
+  ({
+    default: {
+      main: theme.palette.default.dark,
+      hover: theme.palette.default.main
+    },
+    primary: {
+      main: theme.palette.primary.main,
+      hover: theme.palette.primary.dark
+    },
+    secondary: {
+      main: theme.palette.secondary.main,
+      hover: theme.palette.secondary.dark
+    },
+    info: {
+      main: theme.palette.info.main,
+      hover: theme.palette.info.dark
+    },
+    danger: {
+      main: theme.palette.danger.main,
+      hover: theme.palette.danger.dark
+    },
+    dark: {
+      main: 'rgb(55,55,55)',
+      hover: 'rgba(55,55,55, .9)'
     }
-  }
-}))(({ classes, className, children, loading, color, variant, ...rest }) => (
-  <Button
+  }[key] || {
+    main: theme.palette.default.dark,
+    hover: theme.palette.default.main
+  });
+
+const StyledButton = styled(Button, {
+  shouldForwardProp: prop => prop !== 'colorVariant'
+})(({ theme, colorVariant }) => {
+  const { main, hover } = colorMap(theme, colorVariant);
+
+  return {
+    '&.MuiButton-contained': {
+      color: theme.palette.default.contrastText,
+      backgroundColor: main,
+      '&:hover': {
+        backgroundColor: hover
+      }
+    }
+  };
+});
+
+const EsaButton = ({ className, children, loading = false, color = 'default', variant = 'contained', ...rest }) => (
+  <StyledButton
     {...rest}
     variant={variant}
-    className={classnames(className, { [classes.root]: variant === 'contained' })}
+    className={className}
+    colorVariant={color}
   >
     {loading ? <CircularProgress size={24} color="inherit" /> : children}
-  </Button>
-));
+  </StyledButton>
+);
 
 EsaButton.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  classes: PropTypes.object,
   loading: PropTypes.bool,
   color: PropTypes.oneOf(['default', 'primary', 'secondary', 'info', 'danger', 'dark']),
   variant: PropTypes.oneOf(['text', 'outlined', 'contained'])

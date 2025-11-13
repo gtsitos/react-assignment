@@ -1,33 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { makeStyles } from '@mui/styles';
 import { ListItem, ListItemText } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { NavLink, matchPath, useLocation } from 'react-router-dom';
 
-import styles from './styles';
-
-const useStyles = makeStyles(styles);
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  cursor: 'pointer',
+  width: 'auto',
+  color: theme.palette.text.secondary,
+  fontWeight: 500,
+  textTransform: 'inherit',
+  '&:hover': {
+    backgroundColor: theme.palette.default.light
+  },
+  '&.active': {
+    backgroundColor: theme.palette.default.light
+  },
+  '& .MuiListItemText-primary': {
+    fontWeight: 500,
+    color: theme.palette.text.secondary
+  },
+  '&.active .MuiListItemText-primary': {
+    color: theme.palette.text.primary
+  }
+}));
 
 const NavItem = ({ to, title }) => {
-  const classes = useStyles();
   const location = useLocation();
-  const isActive = Boolean(
-    matchPath({ path: to, end: true }, location.pathname)
-  );
+  const isActive = Boolean(matchPath({ path: to, end: true }, location.pathname));
 
   return (
-    <ListItem
+    <StyledListItem
       button
       component={NavLink}
       to={to}
       end={to === '/'}
-      className={classNames(classes.navItem, {
-        [classes.activeListItem]: isActive
-      })}
+      className={isActive ? 'active' : undefined}
     >
-      <ListItemText classes={{ primary: classes.listItemText }} primary={title} />
-    </ListItem>
+      <ListItemText primary={title} />
+    </StyledListItem>
   );
 };
 

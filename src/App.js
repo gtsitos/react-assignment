@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
 import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { fetchFormations, fetchLogs, fetchWells } from './store/reducers/lists.js';
@@ -15,12 +15,28 @@ const appTheme = createTheme(theme);
 
 export default function App() {
   const dispatch = useDispatch();
+  const { wells, logs, formations, status } = useSelector(state => state.lists);
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    dispatch(fetchWells());
-    dispatch(fetchLogs());
-    dispatch(fetchFormations());
-  }, [dispatch]);
+    // Prevent duplicate fetches in StrictMode by using a ref
+    if (hasInitialized.current) {
+      return;
+    }
+
+    // Only fetch if data is not already loaded and not currently loading
+    if (wells.length === 0 && status.wells !== 'loading' && status.wells !== 'succeeded') {
+      dispatch(fetchWells());
+    }
+    if (logs.length === 0 && status.logs !== 'loading' && status.logs !== 'succeeded') {
+      dispatch(fetchLogs());
+    }
+    if (formations.length === 0 && status.formations !== 'loading' && status.formations !== 'succeeded') {
+      dispatch(fetchFormations());
+    }
+
+    hasInitialized.current = true;
+  }, [dispatch, wells.length, logs.length, formations.length, status.wells, status.logs, status.formations]);
 
   return (
     <StyledEngineProvider injectFirst>

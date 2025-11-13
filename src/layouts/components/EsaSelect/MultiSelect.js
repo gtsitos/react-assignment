@@ -1,51 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { withStyles } from '@mui/styles';
 import { FormControl, InputLabel, Select, Input, MenuItem } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
-// Component styles
-const styles = theme => {
-  return {
-    formControl: {
-      display: 'flex',
+const StyledFormControl = styled(FormControl)({
+  display: 'flex',
+  width: '100%'
+});
 
-      width: '100%'
-    }
-  };
-};
-
-const MultiSelect = props => {
-  const { classes, className, label, id, value, onChange, options, shrink, ...rest } = props;
-
-  const rootClassName = classNames(classes.formControl, className);
-
-  return (
-    <FormControl {...rest} className={rootClassName}>
-      <InputLabel htmlFor={id} shrink={shrink}>
-        {label}
-      </InputLabel>
-      <Select
-        multiple
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        input={<Input id={id} />}
-        renderValue={selected =>
-          options
-            .filter(type => selected.includes(type.value))
-            .map(type => type.text)
-            .join(', ')
-        }
-      >
-        {options.map((type, index) => (
-          <MenuItem key={type.text + '-' + index} value={type.value}>
-            {type.text}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  );
-};
+const MultiSelect = ({ className, label, id, value, onChange, options, shrink, ...rest }) => (
+  <StyledFormControl {...rest} className={className}>
+    <InputLabel htmlFor={id} shrink={shrink}>
+      {label}
+    </InputLabel>
+    <Select
+      multiple
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      input={<Input id={id} />}
+      renderValue={selected =>
+        options
+          .filter(type => selected.includes(type.value))
+          .map(type => type.text)
+          .join(', ')
+      }
+    >
+      {options.map((type, index) => (
+        <MenuItem key={type.text + '-' + index} value={type.value}>
+          {type.text}
+        </MenuItem>
+      ))}
+    </Select>
+  </StyledFormControl>
+);
 
 MultiSelect.propTypes = {
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
@@ -54,8 +41,7 @@ MultiSelect.propTypes = {
   options: PropTypes.array,
   shrink: PropTypes.bool,
   onChange: PropTypes.func,
-  className: PropTypes.string,
-  classes: PropTypes.object.isRequired
+  className: PropTypes.string
 };
 
 MultiSelect.defaultProps = {
@@ -65,4 +51,4 @@ MultiSelect.defaultProps = {
   options: []
 };
 
-export default withStyles(styles)(MultiSelect);
+export default MultiSelect;
