@@ -1,4 +1,4 @@
-import { red, blue, yellow, green } from '@material-ui/core/colors';
+import { red, blue, yellow, green } from '@mui/material/colors';
 const white = '#fff';
 const black = '#000';
 
@@ -40,5 +40,7 @@ export default {
     main: red[500],
     dark: red[700],
     contrastText: white
-  }
+  },
+  border: 'rgba(0, 40, 73, .1)',
+  borderShadow: 'rgba(0, 40, 73, .12)'
 };

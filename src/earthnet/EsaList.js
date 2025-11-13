@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, List, ListItem, ListItemText } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { withStyles } from '@mui/styles';
+import { List, ListItem, ListItemText } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Portlet,
   PortletHeader,

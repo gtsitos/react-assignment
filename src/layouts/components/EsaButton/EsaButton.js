@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { withStyles, Button, CircularProgress } from '@material-ui/core';
+import { withStyles } from '@mui/styles';
+import { Button, CircularProgress } from '@mui/material';
 
 // Like https://github.com/brunobertolini/styled-by
 const styledBy = (property, mapping) => props => mapping[props[property]];

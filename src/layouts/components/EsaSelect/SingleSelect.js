@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { withStyles, TextField, MenuItem } from '@material-ui/core';
+import { withStyles } from '@mui/styles';
+import { TextField, MenuItem } from '@mui/material';
 
 // Component styles
 const styles = {

@@ -1,15 +1,17 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Route, Switch } from 'react-router-dom';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { Route, Routes } from 'react-router-dom';
+import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import { fetchFormations, fetchLogs, fetchWells } from './store/reducers/lists.js';
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import theme from './theme';
-
+import CssBaseline from '@mui/material/CssBaseline';
 import ExamplePage from './earthnet/ExamplePage';
 import Wellbore from './earthnet/Wellbore';
 import Histogram from './earthnet/Histogram';
+
+import theme from './theme';
+
+const appTheme = createTheme(theme);
 
 export default function App() {
   const dispatch = useDispatch();
@@ -18,16 +20,18 @@ export default function App() {
     dispatch(fetchWells());
     dispatch(fetchLogs());
     dispatch(fetchFormations());
-  }, []);
+  }, [dispatch]);
 
   return (
-    <MuiThemeProvider theme={createMuiTheme(theme)}>
-      <CssBaseline />
-      <Switch>
-        <Route path="/" exact component={ExamplePage} />
-        <Route path="/wellbore" exact component={Wellbore} />
-        <Route path="/histogram" exact component={Histogram} />
-      </Switch>
-    </MuiThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={appTheme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/" element={<ExamplePage />} />
+          <Route path="/wellbore" element={<Wellbore />} />
+          <Route path="/histogram" element={<Histogram />} />
+        </Routes>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }

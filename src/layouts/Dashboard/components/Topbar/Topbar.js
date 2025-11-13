@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import { Toolbar, Typography } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
+import { Toolbar, Typography } from '@mui/material';
 import styles from './styles';
 import EsaTopNavItem from './components/NavItem/NavItem';
 const useStyles = makeStyles(styles);

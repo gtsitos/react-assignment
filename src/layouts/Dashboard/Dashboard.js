@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import Topbar from './components/Topbar/Topbar';
 
 // Component styles
